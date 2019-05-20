@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logistics.mapper.AccmoduleMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.logistics.entity.Accmodule">
+        <id column="id" property="id" />
+        <result column="userID" property="userID" />
+        <result column="moduleID" property="moduleID" />
+        <association property="module" javaType="com.logistics.entity.Module">
+            <id column="moduleID" property="moduleID" />
+            <result column="moduleName" property="moduleName" />
+            <result column="className" property="className" />
+            <result column="moethod" property="moethod" />
+        </association>
+        <association property="users" javaType="com.logistics.entity.Users">
+            <id column="id" property="id" />
+            <result column="userName" property="userName" />
+            <result column="password" property="password" />
+            <result column="areaID" property="areaID" />
+            <result column="depName" property="depName" />
+            <result column="deGree" property="deGree" />
+            <result column="mobile" property="mobile" />
+            <result column="addr" property="addr" />
+            <result column="staus" property="staus" />
+            <result column="companyName" property="companyName" />
+            <result column="demo" property="demo" />
+        </association>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        select id, userID, moduleID
+    </sql>
+    
+    <select id="selAccModule"  resultMap="BaseResultMap">
+        select * from accmodule a
+        left join  users u on a.userID=u.id
+        left join module m on a.moduleID=m.moduleID
+        <where>
+            <if test="userID!=0 and userID!='' and userID!=null">
+                a.userID=#{userID}
+            </if>
+        </where>
+    </select>
+    <insert id="insAccModule" >
+            INSERT INTO `logistics`.`accmodule`( `userID`, `moduleID`) VALUES
+        <foreach collection="moduleID" item="item" index="index"  separator="," >
+               ( #{userID},#{item} )
+         </foreach>
+
+    </insert>
+    <select id="selectisexit"  resultMap="BaseResultMap" >
+        select * from accmodule a
+        left join  users u on a.userID=u.id
+        left join module m on a.moduleID=m.moduleID
+         <where>
+             <foreach collection="moduleID" item="item" open=" a.moduleID IN (" close=")"
+                      separator=",">
+                 #{item}
+             </foreach>
+             <if test="userID!=0 and userID!=null and userID!=''">
+                 and a.userID=#{userID}
+             </if>
+          </where>
+    </select>
+
+    <delete id="delAccModule" >
+          delete  from  accmodule
+          <where>
+              <foreach collection="moduleID" item="item" open=" moduleID IN (" close=")"
+                       separator=",">
+                  #{item}
+              </foreach>
+              <if test="userID!=0 and userID!=null and userID!=''">
+                  and userID=#{userID}
+              </if>
+          </where>
+
+    </delete>
+    
+    <select id="selectisexitmodule"  resultMap="BaseResultMap">
+        select * from accmodule a
+        left join  users u on a.userID=u.id
+        left join module m on a.moduleID=m.moduleID
+        <where>
+            <if test="userID!=0 and userID!=null and userID!=''">
+                 a.userID=#{userID}
+            </if>
+        </where>
+
+    </select>
+</mapper>

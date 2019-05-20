@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logistics.mapper.BalanceMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.logistics.entity.Balance">
+        <id column="balanceID" property="balanceID" />
+        <result column="customerID" property="customerID" />
+        <result column="faceFee" property="faceFee" />
+        <result column="paidType" property="paidType" />
+        <result column="paidTime" property="paidTime" />
+        <result column="oprTime" property="oprTime" />
+        <result column="userID" property="userID" />
+        <result column="isvalID" property="isvalID" />
+        <result column="demo" property="demo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        balanceID, customerID, faceFee, paidType, paidTime, oprTime, userID, isvalID, demo
+    </sql>
+
+    <resultMap id="p" type="com.logistics.entity.Balance">
+         <result property="balanceID" column="balanceID"></result>
+        <result property="customerID" column="customerID"></result>
+        <result property="faceFee" column="faceFee"></result>
+        <result property="paidType" column="paidType"></result>
+        <result property="paidTime" column="paidTime"></result>
+        <result property="userID" column="userID"></result>
+        <result property="isvalID" column="isvalID"></result>
+        <result property="demo" column="demo"></result>
+        <association property="customer"  javaType="com.logistics.entity.Customer" >
+            <result property="customerID" column="customerID"></result>
+            <result property="customerName" column="customerName"></result>
+        </association>
+        <association property="users"  javaType="com.logistics.entity.Users">
+            <result property="id" column="id"></result>
+            <result property="userName" column="userName"></result>
+        </association>
+
+    </resultMap>
+
+    <resultMap id="page" type="com.logistics.entity.Balance">
+        <result property="balanceID" column="balanceID"></result>
+        <result property="customerID" column="customerID"></result>
+        <result property="faceFee" column="faceFee"></result>
+        <result property="paidType" column="paidType"></result>
+        <result property="paidTime" column="paidTime"></result>
+        <result property="userID" column="userID"></result>
+        <result property="isvalID" column="isvalID"></result>
+        <result property="demo" column="demo"></result>
+        <association property="customer"  javaType="com.logistics.entity.Customer" >
+            <id column="customerID" property="customerID" />
+            <result column="customerName" property="customerName" />
+            <result column="contactName" property="contactName" />
+            <result column="phone" property="phone" />
+            <result column="paidID" property="paidID" />
+            <result column="addr" property="addr" />
+            <result column="areaID" property="areaID" />
+            <result column="customerTypeID" property="customerTypeID" />
+            <result column="factMoney" property="factMoney" />
+            <result column="paidMoney" property="paidMoney" />
+            <association property="paidtype" javaType="com.logistics.entity.Paidtype">
+                <result column="paidID" property="paidID"></result>
+                <result column="paidName" property="paidName"></result>
+            </association>
+            <association property="area"   javaType="com.logistics.entity.Area">
+                <result  column="areaID" property="areaID"></result>
+                <result  column="areaName" property="areaName"></result>
+            </association>
+            <association property="customertype" javaType="com.logistics.entity.Customertype">
+                <result  column="customerTypeID" property="customerTypeID"></result>
+                <result  column="customerTypeName" property="customerTypeName"></result>
+            </association>
+        </association>
+        <association property="users"  javaType="com.logistics.entity.Users">
+            <result property="id" column="id"></result>
+            <result property="userName" column="userName"></result>
+        </association>
+
+    </resultMap>
+
+
+
+    <select id="page" resultMap="p"  >
+        select * from balance b left join customer c on b.customerID=c.customerID  left join users u on u.id=b.userID
+      <where>
+          1=1
+          <if test="balance.customerID !=null   and   balance.customerID !=''  and  balance.customerID!=0 ">
+                  and   b.customerID=#{balance.customerID}
+          </if>
+      </where>
+    </select>
+
+    <select id="selectfinance" resultMap="page"  >
+        select *
+        from balance b
+        left join customer c on c.customerID=b.customerID
+        left join area a on a.areaID=c.areaID
+        left join customertype type on type.customerTypeID=c.customerTypeID
+        left join paidtype p on p.paidID=c.paidID
+        left join users u on u.id=b.userID
+        <where>
+            <if test="balance.paidType!=null and balance.paidType!=''">
+                b.paidType=#{balance.paidType}
+            </if>
+            <if test="balance.isvalID!=null and balance.isvalID!=''">
+              and    b.isvalID=#{balance.isvalID}
+            </if>
+            <if test="customerName!=null and customerName!=''">
+               and    c.customerName like "%"#{customerName}"%"
+            </if>
+            <if test="paidTime1!=null and paidTime1!=''">
+               and b.paidTime like "%" #{paidTime1} "%"
+            </if>
+            <if test="paidTime1!=null and paidTime1!=''">
+              and  b.oprTime like "%" #{paidTime2}"%"
+            </if>
+        </where>
+    </select>
+    <select id="selectcountall" resultMap="page">
+        select *
+        from balance b
+        left join customer c on c.customerID=b.customerID
+        left join area a on a.areaID=c.areaID
+        left join customertype type on type.customerTypeID=c.customerTypeID
+        left join paidtype p on p.paidID=c.paidID
+        left join users u on u.id=b.userID
+        <where>
+            <if test="paidTime!=null and paidTime!=''">
+                and b.paidTime like "%"#{paidTime}"%"
+            </if>
+            <if test="oprTime!=null and oprTime!=''">
+                and b.oprTime like "%"#{oprTime}"%"
+            </if>
+        </where>
+    </select>
+</mapper>

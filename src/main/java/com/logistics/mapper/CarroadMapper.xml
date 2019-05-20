@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logistics.mapper.CarroadMapper">
+
+  <!--  &lt;!&ndash; 开启二级缓存 &ndash;&gt;
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.logistics.entity.Carroad">
+        <id column="roadID" property="roadID" />
+        <result column="transID" property="transID" />
+        <result column="startCity" property="startCity" />
+        <result column="startTime" property="startTime" />
+        <result column="endCity" property="endCity" />
+        <result column="endTime" property="endTime" />
+        <association property="transcar" javaType="com.logistics.entity.Transcar">
+            <id column="transID" property="transID" />
+            <result column="carID" property="carID" />
+            <result column="gcount" property="gcount" />
+            <result column="sendCity" property="sendCity" />
+            <result column="receCity" property="receCity" />
+            <result column="driver" property="driver" />
+            <result column="driverTel" property="driverTel" />
+            <result column="master" property="master" />
+            <result column="masterTel" property="masterTel" />
+            <result column="sendTypeID" property="sendTypeID" />
+            <result column="sendTime" property="sendTime" />
+            <result column="sendFee" property="sendFee" />
+            <result column="carFee" property="carFee" />
+            <result column="carStatus" property="carStatus" />
+            <result column="demo" property="demo" />
+        </association>
+        <association property="car" javaType="com.logistics.entity.Car">
+            <id column="carID" property="carID" />
+            <result column="cardNo" property="cardNo" />
+            <result column="carName" property="carName" />
+            <result column="model" property="model" />
+            <result column="customerID" property="customerID" />
+            <result column="mobile" property="mobile" />
+            <result column="contact" property="contact" />
+            <result column="qq" property="qq" />
+            <result column="email" property="email" />
+            <result column="areaID" property="areaID" />
+            <result column="status" property="status" />
+            <result column="demo" property="demo" />
+        </association>
+        <association property="strCityName" javaType="com.logistics.entity.Area">
+            <id column="areaID" property="areaID" />
+            <result column="strCityName" property="areaName" />
+        </association>
+        <association property="endCityName" javaType="com.logistics.entity.Area">
+            <id column="areaID" property="areaID" />
+            <result column="endCityName" property="areaName" />
+        </association>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        roadID, transID, startCity, startTime, endCity, endTime
+    </sql>
+
+    <select id="selectpagetrandID" resultMap="BaseResultMap" parameterType="com.logistics.entity.Carroad">
+ select   c.*,car.*,t.*,str.areaName  strCityName,end .areaName endCityName
+from carroad c
+left  join transcar t on t.transID=c.transID
+left  join Car car on      t.carID=car.carID
+left join  area str on str.areaID=c.startCity
+left join area end  on end.areaID=endCity
+<where>
+    <if test="carroad.transID!=null and   carroad.transID!=0">
+         c.transID=#{carroad.transID}
+    </if>
+    <if test=" carroad.startTime!=null and   carroad.startTime!=''">
+        and c.startTime   like "%"#{ carroad.startTime}"%"
+    </if>
+    <if test=" carroad.endTime!=null and   carroad.endTime!=''">
+        and c.endTime   like "%"#{ carroad.endTime}"%"
+    </if>
+    <if test=" carroad.startCity!=null and   carroad.startCity!=''">
+        and c.startCity=carroad.startCity
+    </if>
+    <if test=" carroad.endCity!=null and   carroad.endCity!=''">
+        and c.endCity=carroad.endCity
+    </if>
+</where>
+
+
+
+    </select>
+
+</mapper>

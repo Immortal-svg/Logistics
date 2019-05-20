@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logistics.mapper.TranscarMapper">
+<!--
+    &lt;!&ndash; 开启二级缓存 &ndash;&gt;
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.logistics.entity.Transcar">
+        <id column="transID" property="transID" />
+        <result column="carID" property="carID" />
+        <result column="gcount" property="gcount" />
+        <result column="sendCity" property="sendCity" />
+        <result column="receCity" property="receCity" />
+        <result column="driver" property="driver" />
+        <result column="driverTel" property="driverTel" />
+        <result column="master" property="master" />
+        <result column="masterTel" property="masterTel" />
+        <result column="sendTypeID" property="sendTypeID" />
+        <result column="sendTime" property="sendTime" />
+        <result column="sendFee" property="sendFee" />
+        <result column="carFee" property="carFee" />
+        <result column="carStatus" property="carStatus" />
+        <result column="demo" property="demo" />
+        <association property="car" javaType="com.logistics.entity.Car">
+                <result property="carID" column="carID"></result>
+                <result property="cardNo" column="cardNo"></result>
+        </association>
+        <association property="areasendName" javaType="com.logistics.entity.Area">
+                <result property="areaName" column="sendName"></result>
+        </association>
+        <association property="arereceCity" javaType="com.logistics.entity.Area">
+            <result property="areaName" column="receName"></result>
+        </association>
+        <association property="sendtype" javaType="com.logistics.entity.Sendtype">
+            <result property="sendTypeName" column="sendTypeName"></result>
+        </association>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        transID, carID, gcount, sendCity, receCity, driver, driverTel, master, masterTel, sendTypeID, sendTime, sendFee, carFee, carStatus, demo
+    </sql>
+
+    <select id="selectTranscarAll" resultMap="BaseResultMap">
+      select  s.*,t.*,c.cardNo,send.areaName  sendName,rece.areaName  receName
+      from transcar t
+      left join car c on c.carID=t.carID
+      left join area send on send.areaID=t.sendCity
+      left join area rece  on rece.areaID=t.receCity
+      left join   sendtype s on s.sendTypeID=t.sendTypeID
+
+    </select>
+
+    <select id="selectcarStatus" resultMap="BaseResultMap">
+ select  s.*,t.*,c.cardNo,send.areaName  sendName,rece.areaName  receName
+      from transcar t
+      left join car c on c.carID=t.carID
+      left join area send on send.areaID=t.sendCity
+      left join area rece  on rece.areaID=t.receCity
+      left join   sendtype s on s.sendTypeID=t.sendTypeID
+      <where>
+          <if test="carStatus!=null and carStatus!=''">
+               t. carStatus=#{carStatus}
+          </if>
+      </where>
+    </select>
+</mapper>

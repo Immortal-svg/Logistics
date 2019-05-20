@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logistics.mapper.CustomerMapper">
+
+
+<!--    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+
+    <resultMap id="BaseResultMap" type="com.logistics.entity.Customer">
+        <id column="customerID" property="customerID" />
+        <result column="customerName" property="customerName" />
+        <result column="contactName" property="contactName" />
+        <result column="phone" property="phone" />
+        <result column="paidID" property="paidID" />
+        <result column="addr" property="addr" />
+        <result column="areaID" property="areaID" />
+        <result column="customerTypeID" property="customerTypeID" />
+        <result column="factMoney" property="factMoney" />
+        <result column="paidMoney" property="paidMoney" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        customerID, customerName, contactName, phone, paidID, addr, areaID, customerTypeID, factMoney, paidMoney
+    </sql>
+
+   <resultMap id="p" type="com.logistics.entity.Customer">
+       <result  column="customerID" property="customerID"></result>
+       <result column="customerName" property="customerName"></result>
+       <result column="contactName" property="contactName"></result>
+       <result column="phone" property="phone"></result>
+       <result column="paidID" property="paidID"></result>
+       <result column="addr" property="addr"></result>
+       <result column="areaID" property="areaID"></result>
+       <result column="customerTypeID" property="customerTypeID"></result>
+       <result column="factMoney" property="factMoney"></result>
+       <result column="paidMoney" property="paidMoney"></result>
+       <association property="paidtype" javaType="com.logistics.entity.Paidtype">
+            <result column="paidID" property="paidID"></result>
+            <result column="paidName" property="paidName"></result>
+       </association>
+       <association property="area"   javaType="com.logistics.entity.Area">
+            <result  column="areaID" property="areaID"></result>
+            <result  column="areaName" property="areaName"></result>
+       </association>
+       <association property="customertype" javaType="com.logistics.entity.Customertype">
+           <result  column="customerTypeID" property="customerTypeID"></result>
+           <result  column="customerTypeName" property="customerTypeName"></result>
+       </association>
+   </resultMap>
+
+    <select id="selectModelPage" resultMap="p" >
+          select  * from customer c left join paidtype p on c.paidID=p.paidID left join area a on a.areaID=c.areaID
+                left join customertype ct on ct.customerTypeID=c.customerTypeID
+    </select>
+    <select id="selectall" resultMap="p">
+           select  * from customer c left join paidtype p on c.paidID=p.paidID left join area a on a.areaID=c.areaID
+           left join customertype ct on ct.customerTypeID=c.customerTypeID
+        <where>
+            <if test="customer.customerName!=null and customer.customerName!=''">
+                c.customerName like "%"#{customer.customerName}"%"
+            </if>
+            <if test="customer.customerTypeID!=null and customer.customerTypeID!='' and customer.customerTypeID!=0">
+                and  c.customerTypeID=#{customer.customerTypeID}
+            </if>
+
+        </where>
+
+    </select>
+</mapper>

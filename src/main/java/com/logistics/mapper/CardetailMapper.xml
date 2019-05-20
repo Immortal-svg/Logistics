@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logistics.mapper.CardetailMapper">
+<!--
+     开启二级缓存
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.logistics.entity.Cardetail">
+        <id column="detailID" property="detailID" />
+        <result column="transID" property="transID" />
+        <result column="gcount" property="gcount" />
+        <result column="sendCity" property="sendCity" />
+        <result column="receCity" property="receCity" />
+        <result column="startAddr" property="startAddr" />
+        <result column="endAddr" property="endAddr" />
+        <result column="sendCustID" property="sendCustID" />
+        <result column="receCustID" property="receCustID" />
+        <result column="recePerson" property="recePerson" />
+        <result column="phone" property="phone" />
+        <result column="goodsName" property="goodsName" />
+        <result column="unitName" property="unitName" />
+        <result column="insuranceFee" property="insuranceFee" />
+        <result column="otherFee" property="otherFee" />
+        <result column="sendGoods" property="sendGoods" />
+        <result column="paidID" property="paidID" />
+        <result column="orderID" property="orderID" />
+        <result column="paidStuats" property="paidStuats" />
+        <result column="sendFee" property="sendFee" />
+        <result column="faceFee" property="faceFee" />
+        <result column="sendTime" property="sendTime" />
+        <result column="oprTime" property="oprTime" />
+        <result column="userID" property="userID" />
+        <result column="demo" property="demo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detailID, transID, gcount, sendCity, receCity, startAddr, endAddr, sendCustID, receCustID, recePerson, phone, goodsName, unitName, insuranceFee
+        , otherFee, sendGoods, paidID, orderID, paidStuats, sendFee, faceFee, sendTime, oprTime, userID, demo
+    </sql>
+
+    <!--  List<Cardetail> selectpageid(Pagination page,Cardetail cardetail)    -->
+
+
+    <resultMap id="p" type="com.logistics.entity.Cardetail">
+        <result  property="detailID" column="detailID"></result>
+        <result  property="transID" column="transID"></result>
+        <result  property="gcount" column="gcount"></result>
+        <result  property="sendCity" column="sendCity"></result>
+        <result  property="receCity" column="receCity"></result>
+        <result  property="startAddr" column="startAddr"></result>
+        <result  property="endAddr" column="endAddr"></result>
+        <result  property="sendCustID" column="sendCustID"></result>
+        <result  property="receCustID" column="receCustID"></result>
+        <result  property="recePerson" column="recePerson"></result>
+        <result  property="phone" column="phone"></result>
+        <result  property="goodsName" column="goodsName"></result>
+        <result  property="unitName" column="unitName"></result>
+        <result  property="insuranceFee" column="insuranceFee"></result>
+        <result  property="otherFee" column="otherFee"></result>
+        <result  property="sendGoods" column="sendGoods"></result>
+        <result  property="paidID" column="paidID"></result>
+        <result  property="orderID" column="orderID"></result>
+        <result  property="paidStuats" column="paidStuats"></result>
+        <result  property="sendFee" column="sendFee"></result>
+        <result  property="faceFee" column="faceFee"></result>
+        <result  property="sendTime" column="sendTime"></result>
+        <result  property="oprTime" column="oprTime"></result>
+        <result  property="userID" column="userID"></result>
+        <result property="demo" column="demo"></result>
+        <association property="car" javaType="com.logistics.entity.Car">
+            <result property="carID" column="carID"></result>
+            <result property="cardNo" column="cardNo"></result>
+        </association>
+        <association property="sendCustname" javaType="com.logistics.entity.Customer">
+            <result property="customerID" column="customerID"></result>
+            <result property="customerName" column="sendname"></result>
+
+        </association>
+        <association property="receCustname" javaType="com.logistics.entity.Customer">
+            <result property="customerID" column="receCustid"></result>
+            <result property="customerName" column="receCust"></result>
+         </association>
+        <association property="areasendCityName" javaType="com.logistics.entity.Area">
+            <result property="areaID" column="sendCity"></result>
+            <result property="areaName" column="areasendCityName"></result>
+        </association>
+        <association property="areareceCityname" javaType="com.logistics.entity.Area">
+            <result property="areaID" column="receCity"></result>
+            <result property="areaName" column="areareceCityname"></result>
+        </association>
+    </resultMap>
+
+
+
+
+
+    <select id="selectpageid" resultMap="p" >
+         select
+         c.*,t.*,ca.*,
+        cus.customerName  sendname,
+        cus1.customerName  receCust,
+        cus1.customerID receCustid,
+        sendarea.areaName  areasendCityName,
+        receArea .areaName areareceCityname
+         from cardetail c
+         left join transcar t on t.transID=c.transID
+         left join car ca on ca.carID =t.carID
+         left join    customer cus on cus.customerID=c.sendCustID
+         left join   customer cus1 on c.receCustID=cus1.customerID
+	     left join   area  sendarea on sendarea.areaID=c.sendCity
+         left join   area receArea  on receArea.areaID=c.receCity
+         where sendCustID=#{customerID} or receCustID=${customerID}
+
+    </select>
+    <select id="selectpageall" resultMap="p" >
+        select
+         c.*,t.*,ca.*,
+        cus.customerName  sendname,
+        cus1.customerName  receCust,
+        cus1.customerID receCustid,
+        sendarea.areaName  areasendCityName,
+        receArea .areaName areareceCityname
+         from cardetail c
+         left join transcar t on t.transID=c.transID
+         left join car ca on ca.carID =t.carID
+         left join    customer cus on cus.customerID=c.sendCustID
+         left join   customer cus1 on c.receCustID=cus1.customerID
+	      left join   area  sendarea on sendarea.areaID=c.sendCity
+          left join   area receArea  on receArea.areaID=c.receCity
+    </select>
+    <select id="selectallid" resultMap="p">
+              select
+         c.*,t.*,ca.*,
+        cus.customerName  sendname,
+        cus1.customerName  receCust,
+        cus1.customerID receCustid,
+        sendarea.areaName  areasendCityName,
+        receArea .areaName areareceCityname
+         from cardetail c
+         left join transcar t on t.transID=c.transID
+         left join car ca on ca.carID =t.carID
+         left join    customer cus on cus.customerID=c.sendCustID
+         left join   customer cus1 on c.receCustID=cus1.customerID
+	      left join   area  sendarea on sendarea.areaID=c.sendCity
+          left join   area receArea  on receArea.areaID=c.receCity
+          <where>
+              1=1
+              <if test="detailID !=null ">
+                  and  c.detailID=#{detailID}
+              </if>
+          </where>
+    </select>
+
+    <select id="selecttransID" resultMap="p">
+        select
+        c.*,t.*,ca.*,
+        cus.customerName  sendname,
+        cus1.customerName  receCust,
+        cus1.customerID receCustid,
+        sendarea.areaName  areasendCityName,
+        receArea .areaName areareceCityname
+        from cardetail c
+        left join transcar t on t.transID=c.transID
+        left join car ca on ca.carID =t.carID
+        left join    customer cus on cus.customerID=c.sendCustID
+        left join   customer cus1 on c.receCustID=cus1.customerID
+        left join   area  sendarea on sendarea.areaID=c.sendCity
+        left join   area receArea  on receArea.areaID=c.receCity
+        <where>
+            <if test="transID !=null and  transID!='' and transID!=0">
+                  c.transID=#{transID}
+            </if>
+        </where>
+    </select>
+    <!--  多条件查询 -->
+    <select id="Manyconditions" resultMap="p">
+        select
+        c.*,t.*,ca.*,
+        cus.customerName  sendname,
+        cus1.customerName  receCust,
+        cus1.customerID receCustid,
+        sendarea.areaName  areasendCityName,
+        receArea .areaName areareceCityname
+        from cardetail c
+        left join transcar t on t.transID=c.transID
+        left join car ca on ca.carID =t.carID
+        left join    customer cus on cus.customerID=c.sendCustID
+        left join   customer cus1 on c.receCustID=cus1.customerID
+        left join   area  sendarea on sendarea.areaID=c.sendCity
+        left join   area receArea  on receArea.areaID=c.receCity
+        <where>
+        <if test="cardetail.detailID!=null and cardetail.detailID!=''">
+           c.detailID=#{cardetail.detailID}
+        </if>
+        <if test="cardetail.transID !=null and  cardetail.transID!='' and cardetail.transID !=0 " >
+               and   c.transID=#{cardetail.transID}
+         </if>
+         <if test="cardetail.orderID!=null and cardetail.orderID!='' ">
+              and c.orderID=#{cardetail.orderID}
+         </if>
+            <if test="cardetail.sendCustID!=null and cardetail.sendCustID!='' ">
+                and c.sendCustID=#{cardetail.sendCustID}
+            </if>
+            <if test="cardetail.sendCity!=null and cardetail.sendCity!='' and cardetail.sendCity!=0">
+                and c.sendCity=#{cardetail.sendCity}
+            </if>
+            <if test="cardetail.receCustID!=null and cardetail.receCustID!='' and cardetail.receCustID!=0">
+                and c.receCustID=#{cardetail.receCustID}
+            </if>
+            <if test="cardetail.receCity!=null and cardetail.receCity!='' and cardetail.receCity!=0">
+                and c.receCity=#{cardetail.receCity}
+            </if>
+        </where>
+    </select>
+
+</mapper>
